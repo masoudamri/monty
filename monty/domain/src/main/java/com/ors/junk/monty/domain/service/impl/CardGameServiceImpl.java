@@ -31,9 +31,9 @@ public class CardGameServiceImpl implements CardGameService {
 
 	@Override
 	public CardGame create(String name) {
-		CardGameEntity cardGame = persistenceService.newEntity(CardGameEntity.class);
+		CardGameEntity cardGame =new CardGameEntity(); 
 		cardGame.setName(name);
-		return persistenceService.update(cardGame);
+		return persistenceService.persist(cardGame);
 	}
 
 	@Override
@@ -98,20 +98,21 @@ public class CardGameServiceImpl implements CardGameService {
 	public UUID addNewDeck(String cardGameName) {
 		CardGameEntity cardGame = persistenceService.findByName(cardGameName, CardGameEntity.class);
 		GameDeckEntity gameDeck = cardGame.getGameDeck();
-		DeckEntity deck = persistenceService.newEntity(DeckEntity.class);
+		DeckEntity deckEntity = new DeckEntity();
+		persistenceService.persist(deckEntity);
 		for (Card.Suite suite : Card.Suite.values()) {
 			for (Card.Face face : Card.Face.values()) {
-				CardEntity cardEntity = persistenceService.newEntity(CardEntity.class);
-				cardEntity.setDeck(deck);
+				CardEntity cardEntity = new CardEntity(); 
+				cardEntity.setDeck(deckEntity);
 				cardEntity.setSuite(suite);
 				cardEntity.setFace(face);
-				persistenceService.update(cardEntity);
+				persistenceService.persist(cardEntity);
 				gameDeck.getCards().add(cardEntity);
 			}
 		}
-		persistenceService.update(deck);
+		persistenceService.update(deckEntity);
 		persistenceService.update(gameDeck);
 		persistenceService.update(cardGame);
-		return deck.getId();
+		return deckEntity.getId();
 	}
 }

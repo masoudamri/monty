@@ -1,5 +1,7 @@
 package com.ors.junk.monty.persistence.service.impl;
 
+import org.embulk.guice.Bootstrap;
+import org.embulk.guice.LifeCycleInjector;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,29 +18,29 @@ public class PersistenceServiceImplTest {
 	
 	@BeforeEach
 	public void before(){		
-		new PersistenceModule().startup();
-		persistenceService=new PersistenceServiceImpl();
+		LifeCycleInjector inj=new Bootstrap(new PersistenceModule()).requireExplicitBindings(false).initialize();
+		persistenceService=inj.getInstance(PersistenceServiceImpl.class);
 	}
 	
 	//@Test
 	public void simplePlayerTest() {
-		PlayerEntity player = persistenceService.newEntity(PlayerEntity.class);
+		PlayerEntity player =new PlayerEntity();
 		player.setName("mike");
-		persistenceService.update(player);
-
 		System.out.println(persistenceService.get(player.getOrId(), PlayerEntity.class).getName());
+		persistenceService.persist(player);
 	}
 
 	@Test
 	public void simplePlayerTest2() {
 		Assertions.assertThrows(ORecordDuplicatedException.class, () -> {
-			PlayerEntity player = persistenceService.newEntity(PlayerEntity.class);
+			PlayerEntity player = new PlayerEntity();
 			player.setName("mike");
-			persistenceService.update(player);
 
-			PlayerEntity player2 = persistenceService.newEntity(PlayerEntity.class);
+			persistenceService.persist(player);
+
+			PlayerEntity player2 = new PlayerEntity();			
 			player2.setName("mike");
-			persistenceService.update(player2);
+			persistenceService.persist(player2);
 
 			System.out.println(persistenceService.get(player.getOrId(), PlayerEntity.class).getName());
 		});

@@ -1,6 +1,5 @@
 package com.ors.junk.monty.persistence.context;
 
-import java.util.Map;
 import java.util.Properties;
 
 import com.google.inject.AbstractModule;
@@ -18,8 +17,8 @@ import com.ors.junk.monty.persistence.service.PersistenceService;
 import com.ors.junk.monty.persistence.service.impl.PersistenceServiceImpl;
 
 @SuppressWarnings("deprecation")
-public class PersistenceModule extends AbstractModule{
-	
+public class PersistenceModule extends AbstractModule {
+
 	@Override
 	protected void configure() {
 		startup();
@@ -27,16 +26,17 @@ public class PersistenceModule extends AbstractModule{
 		bind(PersistenceService.class).to(PersistenceServiceImpl.class);
 	}
 
-	
 	private static Properties orientDBProp() {
-		return new Properties(){{
-	        setProperty("javax.persistence.jdbc.url", "plocal:/tmp/monty");
-	        setProperty("javax.persistence.jdbc.user", "admin");
-	        setProperty("javax.persistence.jdbc.password", "admin");
-	        setProperty("com.orientdb.entityClasses", Persistable.class.getPackage().getName());
-	    }};
+		return new Properties() {
+			private static final long serialVersionUID = 1L;
+			{
+				setProperty("javax.persistence.jdbc.url", "plocal:/tmp/monty");
+				setProperty("javax.persistence.jdbc.user", "admin");
+				setProperty("javax.persistence.jdbc.password", "admin");
+				setProperty("com.orientdb.entityClasses", Persistable.class.getPackage().getName());
+			}
+		};
 	}
-
 
 	public void startup() {
 		OrientDBObject orientDb = new OrientDBObject("plocal:/tmp/", OrientDBConfig.defaultConfig());

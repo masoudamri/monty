@@ -9,6 +9,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.persist.PersistFilter;
 import com.ors.finance.fyaat.servlet.config.ServletInfoConfig;
 import com.ors.finance.fyaat.servlet.context.binding.DefaultPathHandler;
 import com.ors.finance.fyaat.servlet.undertow.UndertowRunner;
@@ -40,6 +41,7 @@ public class UndertowModule extends AbstractModule {
 	DeploymentInfo deploymentInfo(GuiceResteasyBootstrapServletContextListener listener) {
 		return Servlets.deployment().setClassLoader(UndertowRunner.class.getClassLoader())
 				.setContextPath(servletConfig.context()).setDeploymentName(servletConfig.appName())
+				.addFilter(Servlets.filter(PersistFilter.class))
 				.addServlets(Servlets.servlet(servletConfig.servletName(), HttpServletDispatcher.class)
 						.addMapping(servletConfig.servletMapping()))
 				.addListener(new ListenerInfo(GuiceResteasyBootstrapServletContextListener.class,

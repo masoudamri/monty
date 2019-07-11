@@ -2,6 +2,7 @@ dependencies{
 	apiCompileOnly group: 'com.google.inject', name: 'guice', version: '4.2.0'
 	
 	configImplementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.10'
+    implementation group: "com.google.inject.extensions", name: "guice-persist", version: '4.2.0'
 	implementation group: 'com.google.inject', name: 'guice', version: '4.2.0'
 	implementation group: "io.undertow", name: "undertow-core", version: "2.0.4.Final"
 	implementation group: "io.undertow", name: "undertow-servlet", version: "2.0.4.Final"

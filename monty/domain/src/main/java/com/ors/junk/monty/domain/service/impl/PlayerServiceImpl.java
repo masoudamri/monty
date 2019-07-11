@@ -18,9 +18,9 @@ public class PlayerServiceImpl implements PlayerService {
 	
 	@Override
 	public Player create(String name) {
-		PlayerEntity player=persistenceService.newEntity(PlayerEntity.class);
+		PlayerEntity player= new PlayerEntity();
 		player.setName(name);
-		return persistenceService.update(player);
+		return persistenceService.persist(player);
 	}
 
 	@Override

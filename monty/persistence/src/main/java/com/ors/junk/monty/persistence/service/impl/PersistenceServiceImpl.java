@@ -2,88 +2,120 @@ package com.ors.junk.monty.persistence.service.impl;
 
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
 import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.sql.executor.OResult;
-import com.orientechnologies.orient.object.db.OObjectDatabasePool;
-import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 import com.ors.junk.monty.persistence.model.Persistable;
 import com.ors.junk.monty.persistence.service.PersistenceService;
 
-@SuppressWarnings("deprecation")
 public class PersistenceServiceImpl implements PersistenceService, AutoCloseable {
-	private OObjectDatabasePool db;
 
+	Provider<EntityManager> emp;
 
-	public PersistenceServiceImpl() {
-		db = new OObjectDatabasePool("plocal:/tmp/monty", "admin", "admin");
+	@Inject
+	public PersistenceServiceImpl(	Provider<EntityManager> emp) {
+		this.emp=emp;
 	}
 
 	@Override
-	public <T extends Persistable> T newEntity(Class<T> newEntityClass) {
-		OObjectDatabaseTx tx = null;
+	public <T extends Persistable> T persist(T newEntityClass) {
+		EntityManager em = emp.get();
 		try {
-			tx = db.acquire().begin();
-		    return tx.newInstance(newEntityClass);
+			em.getTransaction().begin();
+			em.persist(newEntityClass);
+			em.getTransaction().commit();
+			return newEntityClass;
 		} finally {
-			tx.commit();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
 		}
 	}
 
 	@Override
 	public <T extends Persistable> T update(T entity) {
-		OObjectDatabaseTx tx = null;
+		EntityManager em = emp.get();
 		try {
-			tx = db.acquire().begin();
-			return tx.save(entity);
+			em.getTransaction().begin();
+			T merged = em.merge(entity);
+			em.getTransaction().commit();
+			return merged;
 		} finally {
-			tx.commit();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
 		}
 	}
 
 	@Override
-	public <T extends Persistable> T get(ORID id, Class<T> entity) {
-		OObjectDatabaseTx tx = null;
+	public <T extends Persistable> T get(ORID id, Class<T> entityClass) {
+		EntityManager em = emp.get();
 		try {
-			tx = db.acquire().begin();
-			return tx.load(id);
+			em.getTransaction().begin();
+			T entity = em.find(entityClass, id);
+			em.getTransaction().commit();
+			return entity;
 		} finally {
-			tx.commit();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
 		}
 	}
 
 	@Override
 	public <T extends Persistable> T find(UUID id, Class<T> entityClass) {
-		OObjectDatabaseTx tx = null;
+		EntityManager em = emp.get();
 		try {
-			tx = db.acquire().begin();
-			OResult res=tx.query(String.format("select from %s where id=?", entityClass.getSimpleName()), id).next();
-			return get(res.getRecord().get().getRecord().getIdentity(),entityClass);
+			em.getTransaction().begin();
+			TypedQuery<T> query = em.createQuery(
+					String.format("select from %s where id=%s", entityClass.getSimpleName(), id), entityClass);
+			T entity = query.getSingleResult();
+			em.getTransaction().commit();
+			return entity;
 		} finally {
-			tx.commit();
-		}
-	}
-	
-	@Override
-	public <T extends Persistable> T findByName(String name, Class<T> entityClass) {
-		OObjectDatabaseTx tx = null;
-		try {
-			tx = db.acquire().begin();
-			OResult res=tx.query(String.format("select from %s where name=?", entityClass.getSimpleName()), name).next();
-			return get(res.getRecord().get().getRecord().getIdentity(),entityClass);
-		} finally {
-			tx.commit();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
 		}
 	}
 
 	@Override
-	public <T extends Persistable> boolean delete(UUID id, Class<T> entity) {
-		return false;
+	public <T extends Persistable> T findByName(String name, Class<T> entityClass) {
+		EntityManager em = emp.get();
+		try {
+			em.getTransaction().begin();
+			TypedQuery<T> query = em.createQuery(
+					String.format("select from %s where name=%s", entityClass.getSimpleName(), name), entityClass);
+			T entity = query.getSingleResult();
+			em.getTransaction().commit();
+			return entity;
+		} finally {
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
 	}
-	
+
+	@Override
+	public <T extends Persistable> void delete(UUID id, Class<T> entityClass) {
+		EntityManager em = emp.get();
+		try {
+			em.getTransaction().begin();
+			em.remove(find(id, entityClass));
+			em.getTransaction().commit();
+		} finally {
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
+	}
+
 	@Override
 	public void close() throws InterruptedException {
-		db.close();
-		Thread.sleep(5000);
+
 	}
 
 }
