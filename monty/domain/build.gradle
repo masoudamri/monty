@@ -1,4 +1,7 @@
 dependencies {
+
+    implementation project(path:":monty:persistence",configuration:"api")
+
     implementation group:"com.google.guava", name: "guava", version: "23.0"
 	implementation group: 'com.google.inject', name: 'guice', version: '4.2.0'
 
