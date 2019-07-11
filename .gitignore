@@ -1,0 +1,13 @@
+/**/bin/
+/**/build/
+/**/out/
+/**/.gradle/
+/**/.idea/
+/**/.metadata/
+/**/.recommenders/
+/**/.settings/
+/**/.classpath
+/**/.project
+/**/*.launch
+!/**/src/**
+/**/src/main/generated/

@@ -1,0 +1,434 @@
+import java.util.concurrent.ConcurrentHashMap;
+
+apply plugin: 'eclipse'
+ext {
+	mainGeneratedSources='src/main/generated'
+	rootBuildDir = file("../build")
+	installDir="file://${rootBuildDir}/../install/"
+	runtimeDependencies=ConcurrentHashMap.<File>newKeySet();
+	localDependencies=ConcurrentHashMap.<File>newKeySet();
+	testDependencies=ConcurrentHashMap.<File>newKeySet();		
+	integrationDependencies=ConcurrentHashMap.<File>newKeySet();
+}
+
+def extractClasspath(Configuration config, String fallbackDir) {
+	return config.incoming.artifactView{av->
+		av.componentFilter(Specs.convertClosureToSpec({ci->(ci instanceof ProjectComponentIdentifier)}))
+	}.files.files.collect{f-> "../../${f.name.split('-')[0]}/lib/${f.name}"}.join(' ')+' ' + config.incoming.artifactView{av->
+		av.componentFilter(Specs.convertClosureToSpec({ci->!(ci instanceof ProjectComponentIdentifier)}))
+	}.files.files.collect{f-> findLibraryLocation(f,fallbackDir)+"/${f.name}"}.join(' ')
+}
+
+def findLibraryLocation(File f, String fallbackDir) {
+	if(runtimeDependencies.contains(f)){
+		return "../../ext";	
+	}else{
+		return fallbackDir;
+	 }
+}
+
+
+group  "com.ors.junk"
+
+
+
+configure (subprojects.findAll{p->p.path==":monty"}){
+	subprojects { thisproj ->
+	    apply plugin: 'java-library'
+	    apply plugin: 'eclipse'
+	    apply plugin: 'ivy-publish'
+	    group  "com.ors.junk"
+	    buildDir  file("${rootBuildDir}/${path.replaceAll(':', '/')}")
+	    archivesBaseName= "${project.path.substring(1).replaceAll(':', '-')}"
+	    
+	    sourceSets {
+	        api
+	        config
+	        main {
+	        	java {
+	        		srcDir "${project.mainGeneratedSources}"
+	        	}
+	        }
+	        integration
+	        local
+	    }
+
+	
+	    configurations {
+	        apiImplementation {
+	            canBeResolved true
+	            canBeConsumed true
+	        }
+	        api {
+	            extendsFrom apiImplementation
+	            canBeResolved true
+	            canBeConsumed true
+	            visible true
+	        }
+	        configImplementation {
+	            canBeResolved true
+	            canBeConsumed true
+	        }
+	        config {
+	            extendsFrom configImplementation
+	            canBeResolved true
+	            canBeConsumed true
+	            visible true
+	        }
+	        localRuntimeClasspath {
+	            canBeResolved true
+	            visible true
+	        }
+	        local {
+	            extendsFrom localRuntimeClasspath
+	            canBeResolved true
+	            canBeConsumed true
+	            visible true
+	        }
+	        integrationRuntimeClasspath {
+	            canBeResolved true
+	            visible true
+	        }
+	        integration {
+	            extendsFrom integrationRuntimeClasspath
+	            canBeResolved true
+	            canBeConsumed true
+	            visible true
+	        }
+	
+	        implementation {
+	            extendsFrom api
+	            extendsFrom configImplementation
+	            canBeResolved true
+	            canBeConsumed true
+	            visible true
+	        }
+	
+	        localImplementation.extendsFrom implementation
+	        integrationImplementation.extendsFrom implementation
+	    }
+	
+	    tasks.jar.baseName = "${project.path.substring(1).replaceAll(':', '-')}"
+	    tasks.jar.classifier "implementation"
+	
+	    task apiJar(type: Jar) {
+	        from sourceSets.api.output
+	        classifier "api"
+	    }
+	
+	
+	    task configJar(type: Jar) {
+	        from sourceSets.config.output
+	        classifier "config"
+	    }
+	
+	    task localJar(type: Jar) {
+	        from sourceSets.local.output
+	        classifier "local"
+	    }
+	
+	    task integrationJar(type: Jar) {
+	        from sourceSets.integration.output
+	        classifier "integration"
+	    }
+	    
+		afterEvaluate{		 
+	
+		   	task resolveDeps{
+					runtimeDependencies.addAll(configurations.runtimeClasspath.incoming.artifactView{av->
+				 				av.componentFilter(Specs.convertClosureToSpec({ci->!(ci instanceof ProjectComponentIdentifier)}))
+				 			}.files.files)
+				 			
+					localDependencies.addAll(configurations.localRuntimeClasspath.incoming.artifactView{av->
+				 				av.componentFilter(Specs.convertClosureToSpec({ci->!(ci instanceof ProjectComponentIdentifier)}))
+				 			}.files.files)
+				
+					testDependencies.addAll(configurations.testRuntimeClasspath.incoming.artifactView{av->
+				 				av.componentFilter(Specs.convertClosureToSpec({ci->!(ci instanceof ProjectComponentIdentifier)}))
+				 			}.files.files)
+		
+					integrationDependencies.addAll(configurations.integrationRuntimeClasspath.incoming.artifactView{av->
+				 				av.componentFilter(Specs.convertClosureToSpec({ci->!(ci instanceof ProjectComponentIdentifier)}))
+				 			}.files.files)
+		
+				 }
+		
+			rootProject.tasks.publishRuntimeDeps.dependsOn resolveDeps
+			rootProject.tasks.publishLocalDeps.dependsOn resolveDeps
+			rootProject.tasks.publishTestDeps.dependsOn resolveDeps
+			rootProject.tasks.publishIntegrationDeps.dependsOn resolveDeps
+			    		
+			task install{	    
+				dependsOn publish
+				dependsOn resolveDeps
+			}    
+		    task runtimePathingJar(type: Jar) {
+		    	dependsOn resolveDeps
+				classifier "runtime"
+				archiveAppendix="pathing"
+		    	afterEvaluate{
+			         manifest {
+			    		attributes(
+			    		    "Class-Path": extractClasspath(configurations.runtimeClasspath,"../../ext")
+			  			)
+			    	}
+			    }
+		    }
+	
+		    task localRuntimePathingJar(type: Jar) {
+		    	dependsOn resolveDeps
+				classifier "local-runtime"
+				archiveAppendix="pathing"
+		    	afterEvaluate{
+			         manifest {
+			    		attributes(
+			    		    "Class-Path": extractClasspath(configurations.localRuntimeClasspath,"../../ext-local")
+			  			)
+			    	}
+			    }
+		    }
+	
+		    task testRuntimePathingJar(type: Jar) {
+		    	dependsOn resolveDeps
+				classifier "test-runtime"
+				archiveAppendix="pathing"
+		    	afterEvaluate{
+			         manifest {
+			    		attributes(
+			    		    "Class-Path": extractClasspath(configurations.testRuntimeClasspath,"../../ext-test")
+			  			)
+			    	}
+			    }
+		    }
+	
+		    task integrationRuntimePathingJar(type: Jar) {
+		    	dependsOn resolveDeps
+				classifier "integration-runtime"
+				archiveAppendix="pathing"
+		    	afterEvaluate{
+			         manifest {
+			    		attributes(
+			    		    "Class-Path": extractClasspath(configurations.integrationRuntimeClasspath,"../../ext-integration")
+			  			)
+			    	}
+			    }
+		    }
+	    }
+	
+	    artifacts {
+	        api apiJar
+	        implementation jar
+	        config configJar
+	        local localJar
+	        integration integrationJar
+	    }
+	
+	    dependencies {
+	        api project(path: ":${project.path}", configuration: "api")
+	        implementation project(path: ":${project.path}", configuration: "api")
+	        implementation project(path: ":${project.path}", configuration: "config")
+	        localImplementation project(path: ":${project.path}", configuration: "implementation")
+	        integrationImplementation project(path: ":${project.path}", configuration: "implementation")
+	    }
+	
+	    task integrationTest(type: Test) {
+	        description = 'Runs integration tests.'
+	        useJUnitPlatform()
+	        group = 'verification'
+	        testClassesDirs = sourceSets.integration.output.classesDirs
+	        classpath = sourceSets.integration.runtimeClasspath
+	        shouldRunAfter test
+	    }
+	    test {
+    		useJUnitPlatform()
+		}
+	    task cleanGenerated(type: Delete) {
+	    	delete fileTree("${project.mainGeneratedSources}")
+		}        
+	
+	    eclipse {
+	        classpath {
+	            downloadJavadoc = true
+	            plusConfigurations += [thisproj.configurations.api, thisproj.configurations.config, thisproj.configurations.local
+	                                   , thisproj.configurations.integration]
+	            file {
+	                whenMerged {
+	                    ec ->
+	                        ec.getEntries().each {
+	                            if (it.getClass().getSimpleName() == 'SourceFolder') {
+	                                if (it.output == null) {
+	
+	                                } else if (it.output.endsWith('api')) {
+	                                    it.getEntryAttributes().put('gradle_used_by_scope', 'api,main,local,test,integration')
+	                                } else if (it.output.endsWith('config')) {
+	                                    it.getEntryAttributes().put('gradle_used_by_scope', 'config,main,local,test,integration')
+	                                } else if (it.output.endsWith('main')) {
+	                                    it.getEntryAttributes().put('gradle_used_by_scope', 'main,local,test,integration')
+	                                }
+	                            }
+	                        }
+	                }
+	            }
+	        }
+	        project {
+	            natures 'org.eclipse.buildship.core.gradleprojectnature'
+	        }
+	    }
+	    thisproj.tasks.compileJava.dependsOn thisproj.tasks.compileApiJava
+	    thisproj.tasks.compileJava.dependsOn thisproj.tasks.compileConfigJava
+	    thisproj.tasks.compileIntegrationJava.dependsOn thisproj.tasks.compileJava
+	    thisproj.tasks.compileLocalJava.dependsOn thisproj.tasks.compileJava
+	    thisproj.tasks.build.dependsOn thisproj.tasks.integrationJar
+	    thisproj.tasks.build.dependsOn thisproj.tasks.localJar
+	    thisproj.tasks.clean.dependsOn thisproj.tasks.cleanGenerated
+	
+	    repositories {
+	         mavenCentral()
+	         //maven {
+		     //  credentials {	
+		     //       username="$nexusUsername"
+		     //       password="$nexusPassword"
+		     //   }
+			//authentication {
+	        //    basic(BasicAuthentication)
+	       // }	
+		  //      url 'https://nexus.infra.oneringsystems.com/repository/maven-central/'
+	      //  }
+	    }
+	
+		publishing {
+		 afterEvaluate{
+			publications {
+				local(IvyPublication) {
+				  module  "${project.path.substring(1).replaceAll(':', '-')}"
+				  revision "${project.revision}"
+				  from components.java
+				  artifacts.clear()
+				  configurations.clear()
+				  configurations {
+			           
+			           api {}
+			           
+			           config{}
+			           
+			           compile {
+			           		extend "api"
+			           		extend "config"
+			           	}
+			           	
+			           implementation {
+			           		extend "compile"
+			           	}
+			           	
+			           runtime {
+			           		extend "implementation"
+			           	}
+
+			           local {
+			           		extend "implementation"
+			           }
+
+			           "local-runtime" {
+			           		extend "local"
+			           }
+		           	
+			           "test" {
+			           		extend "implementation"
+			           }		
+			           
+			           "test-runtime" {
+			           		extend "test"
+			           }		
+			           
+			           "integration" {
+			           		extend "implementation"
+			           }
+			           
+			           "integration-runtime" {
+			           		extend "integration"
+			           }
+			           
+			           "default" {
+			           		extend "implementation"
+			           		extend "runtime"
+			           	}
+			       }
+			 			  
+		          project.tasks.withType(Jar)
+		        	.forEach
+		        	{art->
+			        	artifact(art) {
+			        		    name = art.baseName
+			        		    if(art.archiveAppendix.isPresent()){
+			        		    	name+="-${art.archiveAppendix.get()}"
+			        		    }
+			        		    conf = art.classifier
+			        			classifier=art.classifier
+			        	}
+			        }
+			    }
+			}
+		    repositories {
+				ivy {
+			    	name  'local-repo'
+			    	url  installDir
+			    	patternLayout {
+		            		artifact "[organization]/[revision]/${domain}/lib/[artifact]-[classifier](.[ext])"
+		            		ivy "[organization]/[revision]/${domain}/lib/${project.path.substring(1).replaceAll(':','-')}-ivy.xml"
+					}
+			    }
+		    }
+		   }
+	    }    
+		
+	
+	} 
+}
+
+task publishRuntimeDeps(type: Copy) {		
+	from runtimeDependencies
+	into "${installDir}/${project.group}/${revision}/ext/"
+}
+
+task publishLocalDeps(type: Copy) {
+	from localDependencies	
+	into "${installDir}/${project.group}/${revision}/ext-local/"
+	eachFile{d->
+		if(runtimeDependencies.contains(d.file)){
+			d.exclude()
+		}
+	}
+}
+
+task publishTestDeps(type: Copy) {
+	from testDependencies	
+	into "${installDir}/${project.group}/${revision}/ext-test/"
+	eachFile{d->
+		if(runtimeDependencies.contains(d.file)){
+			d.exclude()
+		}
+	}
+}
+
+task publishIntegrationDeps(type: Copy) {
+	from integrationDependencies	
+	into "${installDir}/${project.group}/${revision}/ext-integration/"
+	eachFile{d->
+		if(runtimeDependencies.contains(d.file)){
+			d.exclude()
+		}
+	}
+}
+
+
+
+task install{	    
+	dependsOn publishRuntimeDeps
+	dependsOn publishLocalDeps
+	dependsOn publishTestDeps
+	dependsOn publishIntegrationDeps
+}    
+
+task cleanInstall(type: Delete) {
+    delete installDir
+}

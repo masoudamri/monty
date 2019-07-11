@@ -1,0 +1,10 @@
+{
+	"name": "finance-fyaat-rest-ui",
+	"version": "1.0.0",
+	"dependencies": {
+		"swagger-ui-dist": "3.22.1"
+	},
+	"directories": {
+		"bin": "src/node"
+	}
+}

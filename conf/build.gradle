@@ -1,0 +1,20 @@
+group  "com.ors.junk"
+
+task build(type: Copy){
+	from "src"
+	into "${rootBuildDir}/conf"
+	exclude "kube-resources/**/*"
+}
+
+task clean(type: Delete){
+    delete "${rootBuildDir}/conf"
+}
+
+task install(type: Copy){
+	dependsOn build
+	from "${rootBuildDir}/conf"
+	into "${installDir}/${project.group}/${revision}/conf"
+}
+task cleanInstall(type: Delete){
+	delete "${installDir}/${project.group}/${revision}/conf"
+}

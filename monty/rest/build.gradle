@@ -1,0 +1,60 @@
+plugins {
+	id "baseline.launch-config" version "0.4.0"
+	id "com.github.node-gradle.node" version "1.3.0"
+}
+
+dependencies{
+	
+	apiImplementation group: "org.jboss.spec.javax.ws.rs", name: "jboss-jaxrs-api_2.1_spec", version: "1.0.1.Final"
+	apiCompileOnly group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.9.8"
+	apiCompileOnly group: "javax.json.bind", name: "javax.json.bind-api", version: "1.0"
+
+	configImplementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.10'
+
+	implementation group: "com.google.inject", name: "guice", version: "4.2.0"	
+	implementation group: "org.jboss.resteasy", name: "resteasy-undertow", version: "3.6.1.Final"
+	implementation group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.9.8"
+	implementation group: "com.fasterxml.jackson.module", name: "jackson-module-mrbean", version: "2.9.8"
+	implementation group: 'io.swagger.core.v3', name: 'swagger-jaxrs2', version: '2.0.7'
+	implementation group: "io.github.classgraph", name: "classgraph", version: "4.8.28"
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+	implementation project(path: ":monty:servlet", configuration: "api")
+
+
+	localRuntime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.8.1'
+	localRuntime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.8.1'
+	
+	
+	localRuntime project(":monty:domain")
+	localRuntime project(path: ":monty:servlet")
+
+}
+
+
+task runLocal(type: JavaExec) {
+  classpath+=configurations.localRuntimeClasspath
+
+  main = 'com.ors.finance.fyaat.boot.BootApp'
+
+  args file('src/local/boot').toURI().toString(), file('../visual/src/local/boot').toURI().toString()
+
+  systemProperty "log4j.configurationFile",file('src/local/boot/config/log4j2.xml').getPath().toString()
+}
+
+
+launchConfig {
+	includedTasks 'runLocal'
+}
+
+node{
+	download=true
+}
+task generateSwaggerUi(type: Copy){
+	dependsOn npmInstall 
+	from file("node_modules/swagger-ui-dist/")
+	into file("src/main/resources/swaggerui/")
+}
+
+task cleanSwaggerUi(type: Delete){
+	delete "src/man/resources/swaggerui"
+}
