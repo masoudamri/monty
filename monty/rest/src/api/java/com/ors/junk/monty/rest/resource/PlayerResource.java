@@ -1,8 +1,7 @@
-package com.ors.finance.fyaat.rest.resource;
+package com.ors.junk.monty.rest.resource;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,12 +21,13 @@ public interface PlayerResource {
 	public List<Player>  readAll();
 
 	@GET
-	@Path("{id}")
+	@Path("{name}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Player read(@PathParam("id") String name);
+	public Player read(@PathParam("name") String name);
 
 	@POST
-	@Consumes(MediaType.APPLICATION_JSON) 
-	public Player create(String name);
+	@Path("{name}")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public Player create(@PathParam("name") String name);
 	
 }

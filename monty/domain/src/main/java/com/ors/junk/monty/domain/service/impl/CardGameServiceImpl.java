@@ -60,7 +60,7 @@ public class CardGameServiceImpl implements CardGameService {
 	@Override
 	public void addPlayer(String playerName, String cardGameName) {
 		PlayerEntity player = persistenceService.findByName(playerName, PlayerEntity.class);
-		CardGameEntity cardGame = persistenceService.findByName(playerName, CardGameEntity.class);
+		CardGameEntity cardGame = persistenceService.findByName(cardGameName, CardGameEntity.class);
 		if (player == null || cardGame == null) {
 			throw new RuntimeException("Player or game not found");
 		}
@@ -76,7 +76,7 @@ public class CardGameServiceImpl implements CardGameService {
 	@Override
 	public void dealCard(String playerName, String cardGameName) {
 		PlayerEntity player = persistenceService.findByName(playerName, PlayerEntity.class);
-		CardGameEntity cardGame = persistenceService.findByName(playerName, CardGameEntity.class);
+		CardGameEntity cardGame = persistenceService.findByName(cardGameName, CardGameEntity.class);
 		if (player == null || cardGame == null) {
 			throw new RuntimeException("Player or game not found");
 		}
@@ -96,7 +96,8 @@ public class CardGameServiceImpl implements CardGameService {
 
 	@Override
 	public UUID addNewDeck(String cardGameName) {
-		GameDeckEntity gameDeck = persistenceService.findByName(cardGameName, CardGameEntity.class).getGameDeck();
+		CardGameEntity cardGame = persistenceService.findByName(cardGameName, CardGameEntity.class);
+		GameDeckEntity gameDeck = cardGame.getGameDeck();
 		DeckEntity deck = persistenceService.newEntity(DeckEntity.class);
 		for (Card.Suite suite : Card.Suite.values()) {
 			for (Card.Face face : Card.Face.values()) {
@@ -110,6 +111,7 @@ public class CardGameServiceImpl implements CardGameService {
 		}
 		persistenceService.update(deck);
 		persistenceService.update(gameDeck);
+		persistenceService.update(cardGame);
 		return deck.getId();
 	}
 }

@@ -7,7 +7,6 @@ import com.ors.junk.monty.domain.service.PlayerService;
 import com.ors.junk.monty.domain.service.impl.CardGameServiceImpl;
 import com.ors.junk.monty.domain.service.impl.PermuteServiceImpl;
 import com.ors.junk.monty.domain.service.impl.PlayerServiceImpl;
-import com.ors.junk.monty.persistence.service.PersistenceService;
 
 public class DomainModule extends AbstractModule{
 	

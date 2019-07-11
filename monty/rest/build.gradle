@@ -14,12 +14,17 @@ dependencies{
 
 	configImplementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.10'
 
+
 	implementation group: "com.google.inject", name: "guice", version: "4.2.0"	
+	implementation group: 'org.embulk', name: 'guice-bootstrap', version: '0.3.1'
+	
 	implementation group: "org.jboss.resteasy", name: "resteasy-undertow", version: "3.6.1.Final"
+	implementation group: "org.jboss.resteasy", name: "resteasy-jaxb-provider", version: "3.6.1.Final"
+	implementation group: "org.jboss.resteasy", name: "resteasy-jackson2-provider", version: "3.6.1.Final"
+
 	implementation group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.9.8"
 	implementation group: "com.fasterxml.jackson.module", name: "jackson-module-mrbean", version: "2.9.8"
 	implementation group: 'io.swagger.core.v3', name: 'swagger-jaxrs2', version: '2.0.7'
-	implementation group: "io.github.classgraph", name: "classgraph", version: "4.8.28"
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 	implementation project(path: ":monty:servlet", configuration: "api")
 

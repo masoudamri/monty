@@ -1,8 +1,7 @@
-package com.ors.finance.fyaat.rest.resource;
+package com.ors.junk.monty.rest.resource;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
@@ -17,7 +16,6 @@ import com.ors.junk.monty.domain.model.CardGame;
 @Path("card-games")
 public interface CardGameResource {
 
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<CardGame>  readAll();
@@ -29,22 +27,28 @@ public interface CardGameResource {
 
 	@POST
 	@Path("{name}")
-	@Consumes(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.APPLICATION_JSON) 
 	public CardGame create(@PathParam("name") String name);
 	
 	@PATCH
 	@Path("{name}/shuffle")
-	@Consumes(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.APPLICATION_JSON) 
 	public  void shuffle(@PathParam("name") String name);
+
+	@PATCH
+	@Path("{name}/add-player/{playerName}")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public  void addPlayer(@PathParam("name") String name,@PathParam("playerName") String playerName);
+
 	
 	@PATCH
 	@Path("{name}/deal/{playerName}")
-	@Consumes(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.APPLICATION_JSON) 
 	public  void deal(@PathParam("name") String name,@PathParam("playerName") String playerName);
 
 	@PATCH
 	@Path("{name}/add-deck")
-	@Consumes(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.APPLICATION_JSON) 
 	public  void addDeck(@PathParam("name") String name);
 
 }

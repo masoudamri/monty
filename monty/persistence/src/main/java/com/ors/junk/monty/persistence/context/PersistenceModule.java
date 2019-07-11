@@ -1,7 +1,5 @@
 package com.ors.junk.monty.persistence.context;
 
-import javax.inject.Inject;
-
 import com.google.inject.AbstractModule;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
@@ -20,19 +18,19 @@ public class PersistenceModule extends AbstractModule{
 	
 	@Override
 	protected void configure() {
+		startup();
 		bind(PersistenceService.class).to(PersistenceServiceImpl.class);
 	}
 	
-	@Inject
 	public void startup() {
-		OrientDBObject orientDb = new OrientDBObject("plocal:junk", OrientDBConfig.defaultConfig());
+		OrientDBObject orientDb = new OrientDBObject("plocal:/tmp/", OrientDBConfig.defaultConfig());
 		if (orientDb.exists("monty")) {
 			orientDb.drop("monty");
 		}
 		orientDb.create("monty", ODatabaseType.PLOCAL);
 		orientDb.close();
 
-		OObjectDatabasePool db = new OObjectDatabasePool("plocal:junk/monty", "admin", "admin");
+		OObjectDatabasePool db = new OObjectDatabasePool("plocal:/tmp/monty", "admin", "admin");
 
 		OObjectDatabaseTx tx = db.acquire();
 

@@ -1,5 +1,6 @@
 package com.ors.junk.monty.persistence.model;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,13 +14,13 @@ public class CardGameEntity  implements CardGame, Persistable{
 	@Id
 	ORID orId;
 
-	public UUID Id;
+	public UUID Id=UUID.randomUUID();
 
 	public String  name;
 	
-	public Set<PlayerEntity> players;
+	public Set<PlayerEntity> players=new HashSet<>();
 	
-	public GameDeckEntity gameDeck;
+	public GameDeckEntity gameDeck=new GameDeckEntity();
 
 	
 	

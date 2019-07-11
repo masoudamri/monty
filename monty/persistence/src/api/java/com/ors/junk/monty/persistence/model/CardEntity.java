@@ -4,14 +4,13 @@ import javax.persistence.Id;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.Card;
-import com.ors.junk.monty.domain.model.Deck;
 
 public class CardEntity  implements Card, Persistable{
 	
 	@Id
 	ORID orId;
 	
-	Deck deck;
+	DeckEntity deck;
 	
 	Suite suite;
 
@@ -30,10 +29,10 @@ public class CardEntity  implements Card, Persistable{
 
 	
 	
-	public Deck getDeck() {
+	public DeckEntity getDeck() {
 		return deck;
 	}
-	public void setDeck(Deck deck) {
+	public void setDeck(DeckEntity deck) {
 		this.deck = deck;
 	}
 	public Suite getSuite() {

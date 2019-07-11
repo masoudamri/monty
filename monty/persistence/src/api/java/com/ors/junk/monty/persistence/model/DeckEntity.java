@@ -12,7 +12,7 @@ public class DeckEntity implements Deck, Persistable{
 	@Id
 	ORID orId;
 	
-	public UUID id;
+	public UUID id=UUID.randomUUID();
 
 	@Override
 	public ORID getOrId() {	

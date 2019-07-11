@@ -4,9 +4,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.ors.finance.fyaat.rest.resource.CardGameResource;
 import com.ors.junk.monty.domain.model.CardGame;
 import com.ors.junk.monty.domain.service.CardGameService;
+import com.ors.junk.monty.rest.model.CardGameBean;
+import com.ors.junk.monty.rest.resource.CardGameResource;
 
 public class CardGameResourceImpl implements CardGameResource {
 	
@@ -25,17 +26,22 @@ public class CardGameResourceImpl implements CardGameResource {
 
 	@Override
 	public CardGame read(String name) {
-		return cardGameService.get(name);
+		return new CardGameBean(cardGameService.get(name));
 	}
 
 	@Override
 	public CardGame create(String name) {
-		return cardGameService.create(name);
+		return new CardGameBean(cardGameService.create(name));
 	}
 
 	@Override
 	public void shuffle(String name) {
 		cardGameService.shuffle(name);
+	}
+	
+	@Override
+	public void addPlayer(String cardGameName, String playerName) {
+		cardGameService.addPlayer(playerName, cardGameName);
 	}
 
 	@Override

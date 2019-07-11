@@ -5,8 +5,8 @@ cacheTTL: 0
 openAPI:
   info:
     version: '0.0.1'
-    title: Fyaat API
-    description: 'This api allows mobile applications to consume Monty services'
+    title: Monty API
+    description: 'This applications to consume Monty services'
     contact:
       email: masoud@fyaat.com
   servers:

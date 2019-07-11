@@ -3,6 +3,7 @@ package com.ors.junk.monty.persistence.service.impl;
 import java.util.UUID;
 
 import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.object.db.OObjectDatabasePool;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 import com.ors.junk.monty.persistence.model.Persistable;
@@ -14,7 +15,7 @@ public class PersistenceServiceImpl implements PersistenceService, AutoCloseable
 
 
 	public PersistenceServiceImpl() {
-		db = new OObjectDatabasePool("plocal:junk/monty", "admin", "admin");
+		db = new OObjectDatabasePool("plocal:/tmp/monty", "admin", "admin");
 	}
 
 	@Override
@@ -22,7 +23,7 @@ public class PersistenceServiceImpl implements PersistenceService, AutoCloseable
 		OObjectDatabaseTx tx = null;
 		try {
 			tx = db.acquire().begin();
-			return (T) tx.newInstance(newEntityClass);
+		    return tx.newInstance(newEntityClass);
 		} finally {
 			tx.commit();
 		}
@@ -40,35 +41,35 @@ public class PersistenceServiceImpl implements PersistenceService, AutoCloseable
 	}
 
 	@Override
-	public <T extends Persistable, O> T get(O id, Class<T> entity) {
+	public <T extends Persistable> T get(ORID id, Class<T> entity) {
 		OObjectDatabaseTx tx = null;
 		try {
 			tx = db.acquire().begin();
-			return tx.load((ORID)id);
+			return tx.load(id);
 		} finally {
 			tx.commit();
 		}
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T extends Persistable> T find(UUID id, Class<T> entityClass) {
 		OObjectDatabaseTx tx = null;
 		try {
 			tx = db.acquire().begin();
-			return (T) tx.query(String.format("select from %s where id=?", entityClass.getSimpleName()), id);
+			OResult res=tx.query(String.format("select from %s where id=?", entityClass.getSimpleName()), id).next();
+			return get(res.getRecord().get().getRecord().getIdentity(),entityClass);
 		} finally {
 			tx.commit();
 		}
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T extends Persistable> T findByName(String name, Class<T> entityClass) {
 		OObjectDatabaseTx tx = null;
 		try {
 			tx = db.acquire().begin();
-			return (T) tx.query(String.format("select from %s where name=?", entityClass.getSimpleName()), name);
+			OResult res=tx.query(String.format("select from %s where name=?", entityClass.getSimpleName()), name).next();
+			return get(res.getRecord().get().getRecord().getIdentity(),entityClass);
 		} finally {
 			tx.commit();
 		}

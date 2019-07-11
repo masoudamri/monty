@@ -1,6 +1,5 @@
 package com.ors.junk.monty.rest.context;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -9,6 +8,7 @@ import org.aeonbits.owner.ConfigFactory;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.module.mrbean.MrBeanModule;
@@ -55,6 +55,8 @@ public class RestModule extends AbstractModule {
 		mapper.registerModule(new SimpleModule());
 		mapper.registerModule(new MrBeanModule());
 		mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		mapper.disable(SerializationFeature.FAIL_ON_SELF_REFERENCES);
 		return mapper;
 	}
 
