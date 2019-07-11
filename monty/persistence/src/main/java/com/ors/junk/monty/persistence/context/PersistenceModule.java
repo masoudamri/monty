@@ -1,6 +1,10 @@
 package com.ors.junk.monty.persistence.context;
 
+import java.util.Map;
+import java.util.Properties;
+
 import com.google.inject.AbstractModule;
+import com.google.inject.persist.jpa.JpaPersistModule;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
@@ -19,9 +23,21 @@ public class PersistenceModule extends AbstractModule{
 	@Override
 	protected void configure() {
 		startup();
+		install(new JpaPersistModule("montyJpaUnit").properties(orientDBProp()));
 		bind(PersistenceService.class).to(PersistenceServiceImpl.class);
 	}
+
 	
+	private static Properties orientDBProp() {
+		return new Properties(){{
+	        setProperty("javax.persistence.jdbc.url", "plocal:/tmp/monty");
+	        setProperty("javax.persistence.jdbc.user", "admin");
+	        setProperty("javax.persistence.jdbc.password", "admin");
+	        setProperty("com.orientdb.entityClasses", Persistable.class.getPackage().getName());
+	    }};
+	}
+
+
 	public void startup() {
 		OrientDBObject orientDb = new OrientDBObject("plocal:/tmp/", OrientDBConfig.defaultConfig());
 		if (orientDb.exists("monty")) {
