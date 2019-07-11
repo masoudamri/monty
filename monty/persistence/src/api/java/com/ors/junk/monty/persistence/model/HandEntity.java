@@ -2,16 +2,35 @@ package com.ors.junk.monty.persistence.model;
 
 import java.util.Set;
 
+import javax.persistence.Id;
+
+import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.Hand;
 
-public class HandEntity implements Hand {
+public class HandEntity implements Hand, Persistable {
 
+	
+	@Id
+	ORID orId;
+	
 	PlayerEntity player;
 
 	CardGameEntity cardGame;
 
 	Set<CardEntity> cards;
 
+	
+	@Override
+	public ORID getOrId() {	
+		return orId;
+	};
+
+
+	public void setOrId(ORID orId) {	
+		this.orId=orId;
+	};
+
+	
 	public PlayerEntity getPlayer() {
 		return player;
 	}

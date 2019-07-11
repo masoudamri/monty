@@ -5,6 +5,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
+import org.aeonbits.owner.ConfigFactory;
+
 import com.ors.finance.fyaat.servlet.config.ServletInfoConfig;
 import com.ors.finance.fyaat.servlet.context.binding.DefaultPathHandler;
 
@@ -14,17 +16,17 @@ import io.undertow.servlet.api.DeploymentManager;
 
 public class UndertowRunner {
 
+	private final ServletInfoConfig servletInfoConfig=ConfigFactory.create(ServletInfoConfig.class);
+	
 	private final Undertow.Builder undertow;
 	private final PathHandler pathHandler;
-	private final ServletInfoConfig servletInfoConfig;
 	private final DeploymentManager manager;
 	private Undertow server;
 
 	@Inject
 	public UndertowRunner(@DefaultPathHandler PathHandler pathHandler,
-			ServletInfoConfig servletInfoConfig, DeploymentManager manager, Undertow.Builder undertow) {
+			 DeploymentManager manager, Undertow.Builder undertow) {
 		this.pathHandler=pathHandler;
-		this.servletInfoConfig=servletInfoConfig;
 		this.manager = manager;
 		this.undertow = undertow;
 	}

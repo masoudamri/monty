@@ -3,9 +3,15 @@ package com.ors.junk.monty.persistence.model;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.Id;
+
+import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.CardGame;
 
-public class CardGameEntity  implements CardGame{
+public class CardGameEntity  implements CardGame, Persistable{
+
+	@Id
+	ORID orId;
 
 	public UUID Id;
 
@@ -14,6 +20,18 @@ public class CardGameEntity  implements CardGame{
 	public Set<PlayerEntity> players;
 	
 	public GameDeckEntity gameDeck;
+
+	
+	
+	@Override
+	public ORID getOrId() {	
+		return orId;
+	};
+
+
+	public void setOrId(ORID orId) {	
+		this.orId=orId;
+	};
 
 	public UUID getId() {
 		return Id;

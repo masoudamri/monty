@@ -1,8 +1,8 @@
 package com.ors.finance.fyaat.servlet.context;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.aeonbits.owner.ConfigFactory;
 import org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener;
 import org.jboss.resteasy.plugins.guice.ext.JaxrsModule;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
@@ -26,8 +26,8 @@ import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.util.ImmediateInstanceHandle;
 
 public class UndertowModule extends AbstractModule {
-	@Inject
-	ServletInfoConfig servletConfig;
+	
+	ServletInfoConfig servletConfig=ConfigFactory.create(ServletInfoConfig.class);
 	
 	@Override
 	protected void configure() {

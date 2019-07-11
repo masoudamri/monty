@@ -5,12 +5,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.Id;
+
 import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.CardGame;
 import com.ors.junk.monty.domain.model.Player;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 
 public class PlayerEntity implements Player, Persistable{
 	
@@ -18,15 +17,23 @@ public class PlayerEntity implements Player, Persistable{
 	@Id
 	ORID orId;
 	
-	@Column(unique=true)
 	UUID Id=UUID.randomUUID();
 	
-	@Column(unique=true)
 	String name;
 	
 	Map<CardGameEntity,HandEntity> hands=new HashMap<>();
 
+	@Override
+	public ORID getOrId() {	
+		return orId;
+	};
 
+
+	public void setOrId(ORID orId) {	
+		this.orId=orId;
+	};
+
+	
 	@Override
 	public UUID getId() {
 		return Id;
@@ -73,15 +80,5 @@ public class PlayerEntity implements Player, Persistable{
 	public void setHands(Map<CardGameEntity, HandEntity> hands) {
 		this.hands = hands;
 	}
-
-	@Override
-	public ORID getOrId() {	
-		return orId;
-	};
-
-
-	public void setOrId(ORID orId) {	
-		this.orId=orId;
-	};
 
 }

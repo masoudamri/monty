@@ -1,17 +1,20 @@
 package com.ors.junk.monty.domain.service;
 
+import java.util.UUID;
+
 import com.ors.junk.monty.domain.model.CardGame;
-import com.ors.junk.monty.domain.model.Player;
 
 public interface CardGameService {
 
 	CardGame create(String name);
 
-	CardGame get(long id);
+	CardGame get(String name);
+	
+	UUID addNewDeck(String cardGameName);
 
-	void addPlayer(Player player, CardGame cardGame);
+	void addPlayer(String playerName, String cardGameName);
 
-	void dealCard(Player player, CardGame cardGame);
+	void dealCard(String playerName, String cardGameName);
 
-	void shuffle(CardGame cardGame);
+	void shuffle(String cardGameName);
 }

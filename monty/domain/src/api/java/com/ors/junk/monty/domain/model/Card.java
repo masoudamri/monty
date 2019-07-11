@@ -30,6 +30,8 @@ public interface Card {
 	Deck getDeck();
 	
 	Suite getSuite();
-	
+
+	Face getFace();
+
 	
 }

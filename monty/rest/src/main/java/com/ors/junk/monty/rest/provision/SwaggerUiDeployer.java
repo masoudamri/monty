@@ -1,4 +1,4 @@
-package com.ors.finance.fyaat.rest.provision;
+package com.ors.junk.monty.rest.provision;
 
 import com.google.inject.spi.ProvisionListener;
 import com.ors.finance.fyaat.rest.config.RestConfig;

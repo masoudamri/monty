@@ -4,6 +4,9 @@ plugins {
 }
 
 dependencies{
+
+	
+	apiImplementation project(path:":monty:domain",configuration:"api")
 	
 	apiImplementation group: "org.jboss.spec.javax.ws.rs", name: "jboss-jaxrs-api_2.1_spec", version: "1.0.1.Final"
 	apiCompileOnly group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.9.8"
@@ -27,6 +30,8 @@ dependencies{
 	
 	localRuntime project(":monty:domain")
 	localRuntime project(path: ":monty:servlet")
+	localRuntime project(path: ":monty:persistence")
+	
 
 }
 
@@ -34,11 +39,11 @@ dependencies{
 task runLocal(type: JavaExec) {
   classpath+=configurations.localRuntimeClasspath
 
-  main = 'com.ors.finance.fyaat.boot.BootApp'
+  main = "com.ors.junk.monty.rest.RunModules"
 
-  args file('src/local/boot').toURI().toString(), file('../visual/src/local/boot').toURI().toString()
+  args "com.ors.junk.monty.rest.context.RestModule", "com.ors.finance.fyaat.servlet.context.UndertowModule", "com.ors.junk.monty.domain.context.DomainModule", "com.ors.junk.monty.persistence.context.PersistenceModule"
 
-  systemProperty "log4j.configurationFile",file('src/local/boot/config/log4j2.xml').getPath().toString()
+  systemProperty "log4j.configurationFile",file('src/local/resources/log4j2.xml').getPath().toString()
 }
 
 

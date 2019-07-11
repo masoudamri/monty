@@ -11,26 +11,40 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.ors.junk.monty.domain.model.CardGame;
 
+
+@Path("card-games")
 public interface CardGameResource {
 
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<?>  readAll();
+	public List<CardGame>  readAll();
 
 	@GET
-	@Path("{id}")
+	@Path("{name}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Object read(@PathParam("id") long id);
+	public CardGame read(@PathParam("name") String name);
 
 	@POST
+	@Path("{name}")
 	@Consumes(MediaType.APPLICATION_JSON) 
-	public  void create(Object resource);
+	public CardGame create(@PathParam("name") String name);
 	
 	@PATCH
-	@Path("{id}")
+	@Path("{name}/shuffle")
 	@Consumes(MediaType.APPLICATION_JSON) 
-	public  void update(@PathParam("id") long id, Object resource);
+	public  void shuffle(@PathParam("name") String name);
 	
+	@PATCH
+	@Path("{name}/deal/{playerName}")
+	@Consumes(MediaType.APPLICATION_JSON) 
+	public  void deal(@PathParam("name") String name,@PathParam("playerName") String playerName);
+
+	@PATCH
+	@Path("{name}/add-deck")
+	@Consumes(MediaType.APPLICATION_JSON) 
+	public  void addDeck(@PathParam("name") String name);
+
 }

@@ -1,9 +1,11 @@
-package com.ors.finance.fyaat.rest.context;
+package com.ors.junk.monty.rest.context;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+
+import org.aeonbits.owner.ConfigFactory;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,22 +18,23 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.AbstractMatcher;
 import com.ors.finance.fyaat.rest.config.RestConfig;
-import com.ors.finance.fyaat.rest.provision.SwaggerUiDeployer;
-import com.ors.finance.fyaat.rest.resource.impl.CardGameResourceImpl;
 import com.ors.finance.fyaat.servlet.context.binding.DefaultPathHandler;
+import com.ors.junk.monty.rest.provision.SwaggerUiDeployer;
+import com.ors.junk.monty.rest.resource.impl.CardGameResourceImpl;
+import com.ors.junk.monty.rest.resource.impl.PlayerResourceImpl;
 
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.undertow.server.handlers.PathHandler;
 
 public class RestModule extends AbstractModule {
 
-	@Inject
-	RestConfig restConfig;
+	RestConfig restConfig=ConfigFactory.create(RestConfig.class);
 
 	
 	@Override
 	protected void configure() {
 		bind(CardGameResourceImpl.class);
+		bind(PlayerResourceImpl.class);
 		bind(OpenApiResource.class);
 		bindListener(new AbstractMatcher<Binding<?>>() {
 			final TypeLiteral<PathHandler> type = new TypeLiteral<PathHandler>() {
