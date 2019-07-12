@@ -1,7 +1,5 @@
 package com.ors.junk.monty.rest.resource.impl;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import com.ors.junk.monty.domain.model.Player;
@@ -19,11 +17,6 @@ public class PlayerResourceImpl implements PlayerResource{
 	}
 
 	@Override
-	public List<Player> readAll() {
-		return null;
-	}
-
-	@Override
 	public Player read(String name) {
 		return new PlayerBean(playerService.get(name));
 	}
@@ -31,6 +24,11 @@ public class PlayerResourceImpl implements PlayerResource{
 	@Override
 	public Player create(String name) {
 		return new PlayerBean(playerService.create(name));
+	}
+
+	@Override
+	public void deletePlayer(String name) {
+		playerService.deletePlayer(name);
 	}
 
 }

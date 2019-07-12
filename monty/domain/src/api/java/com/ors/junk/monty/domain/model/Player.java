@@ -1,16 +1,13 @@
 package com.ors.junk.monty.domain.model;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.Map;
 
 public interface Player {
-	
-	public UUID getId();
-	
-	public String getName();
-		
-	public <T extends CardGame> Set<T> getGames();
 
-	public Hand getHand(CardGame game);
+	public String getBId();
+
+	public String getName();
+
+	public Map<String, Hand> getHands();
 
 }

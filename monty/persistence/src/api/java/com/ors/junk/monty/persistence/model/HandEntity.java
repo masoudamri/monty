@@ -1,33 +1,38 @@
 package com.ors.junk.monty.persistence.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.Hand;
 
+@Entity
 public class HandEntity implements Hand, Persistable {
 
 	
 	@Id
-	ORID orId;
+	ORID id;
 	
+	@ManyToOne
 	PlayerEntity player;
 
-	CardGameEntity cardGame;
-
-	Set<CardEntity> cards;
+	@OneToMany
+	Set<CardEntity> cards=new HashSet<>();
 
 	
 	@Override
-	public ORID getOrId() {	
-		return orId;
+	public ORID getId() {	
+		return id;
 	};
 
 
-	public void setOrId(ORID orId) {	
-		this.orId=orId;
+	public void setId(ORID id) {	
+		this.id=id;
 	};
 
 	
@@ -37,14 +42,6 @@ public class HandEntity implements Hand, Persistable {
 
 	public void setPlayer(PlayerEntity player) {
 		this.player = player;
-	}
-
-	public CardGameEntity getCardGame() {
-		return cardGame;
-	}
-
-	public void setCardGame(CardGameEntity cardGame) {
-		this.cardGame = cardGame;
 	}
 
 	@SuppressWarnings("unchecked")

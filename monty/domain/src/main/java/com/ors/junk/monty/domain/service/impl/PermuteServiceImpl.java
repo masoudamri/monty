@@ -21,7 +21,7 @@ public class PermuteServiceImpl implements PermuteService {
 		final int size=topBound+1;
 		List<Integer> list=new ArrayList<>(size);
 		for(int i=0;i<size;i++) {
-			list.set(i,i);
+			list.add(i);
 		}
 		
 		for(int i=topBound;i>0;i--) {

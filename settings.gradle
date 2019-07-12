@@ -10,7 +10,6 @@
 rootProject.name = 'root'
 
 include ':conf'
-include ':monty:core'
 include ':monty:domain'
 include ':monty:persistence'
 include ':monty:rest'

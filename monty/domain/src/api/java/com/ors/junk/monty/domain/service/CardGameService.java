@@ -1,7 +1,5 @@
 package com.ors.junk.monty.domain.service;
 
-import java.util.UUID;
-
 import com.ors.junk.monty.domain.model.CardGame;
 
 public interface CardGameService {
@@ -10,11 +8,13 @@ public interface CardGameService {
 
 	CardGame get(String name);
 	
-	UUID addNewDeck(String cardGameName);
-
+	String addNewDeck(String cardGameName);
+	
 	void addPlayer(String playerName, String cardGameName);
 
 	void dealCard(String playerName, String cardGameName);
 
 	void shuffle(String cardGameName);
+
+	void deleteDeck(String name);
 }

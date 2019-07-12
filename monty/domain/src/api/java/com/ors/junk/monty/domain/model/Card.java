@@ -3,7 +3,7 @@ package com.ors.junk.monty.domain.model;
 public interface Card {
 	
 	enum Suite{
-		HEARTS, DIAMONDS,SPADES,CLOVERS
+		DIAMONDS, CLOVERS,SPADES,HEARTS 
 	}
 	
 	enum Face{
@@ -20,10 +20,15 @@ public interface Card {
 		JACK(11),
 		QUEEN(12),
 		KING(13);
-		int value;
-		Face(int value) {
-			this.value=value;
+		int score;
+		Face(int score) {
+			this.score=score;
 		}
+		
+		public int getScore() {
+			return score;
+		}
+		
 	}
 
 	

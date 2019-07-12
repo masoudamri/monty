@@ -1,7 +1,6 @@
 package com.ors.junk.monty.rest.resource;
 
-import java.util.List;
-
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
@@ -17,38 +16,57 @@ import com.ors.junk.monty.domain.model.CardGame;
 public interface CardGameResource {
 
 	@GET
+	@Path("{gameName}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<CardGame>  readAll();
-
-	@GET
-	@Path("{name}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public CardGame read(@PathParam("name") String name);
+	public CardGame read(@PathParam("gameName") String gameName);
 
 	@POST
-	@Path("{name}")
+	@Path("{gameName}")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public CardGame create(@PathParam("name") String name);
+	public CardGame create(@PathParam("gameName") String gameName);
 	
 	@PATCH
-	@Path("{name}/shuffle")
+	@Path("{gameName}/shuffle")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public  void shuffle(@PathParam("name") String name);
+	public  void shuffle(@PathParam("gameName") String gameName);
 
 	@PATCH
-	@Path("{name}/add-player/{playerName}")
+	@Path("{gameName}/add-player/{playerName}")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public  void addPlayer(@PathParam("name") String name,@PathParam("playerName") String playerName);
+	public  void addPlayer(@PathParam("gameName") String gameName,@PathParam("playerName") String playerName);
 
 	
 	@PATCH
-	@Path("{name}/deal/{playerName}")
+	@Path("{gameName}/deal/{playerName}/{times}")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public  void deal(@PathParam("name") String name,@PathParam("playerName") String playerName);
+	public  void deal(@PathParam("gameName") String gameName,@PathParam("playerName") String playerName,@PathParam("times") Integer times);
 
 	@PATCH
-	@Path("{name}/add-deck")
+	@Path("{gameName}/add-deck")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public  void addDeck(@PathParam("name") String name);
+	public  void addDeck(@PathParam("gameName") String gameName);
+
+
+	@GET
+	@Path("{gameName}/undealt")	
+	@Produces(MediaType.APPLICATION_JSON)
+	public Object undealt(@PathParam("gameName") String gameName);
+
+	@GET
+	@Path("{gameName}/deck-tally")	
+	@Produces(MediaType.APPLICATION_JSON)
+	public Object deckTally(@PathParam("gameName") String gameName);
+
+
+	@GET
+	@Path("{gameName}/player-scores")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Object playerScores(@PathParam("gameName") String gameName);
+
+	
+	@DELETE
+	@Path("{gameName}")	
+	@Produces(MediaType.APPLICATION_JSON)
+	void deleteCardGame(String gameName);
 
 }

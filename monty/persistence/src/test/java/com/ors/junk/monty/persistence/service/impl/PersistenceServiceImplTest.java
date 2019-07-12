@@ -26,7 +26,7 @@ public class PersistenceServiceImplTest {
 	public void simplePlayerTest() {
 		PlayerEntity player =new PlayerEntity();
 		player.setName("mike");
-		System.out.println(persistenceService.get(player.getOrId(), PlayerEntity.class).getName());
+		System.out.println(persistenceService.get(player.getId(), PlayerEntity.class).getName());
 		persistenceService.persist(player);
 	}
 
@@ -42,7 +42,7 @@ public class PersistenceServiceImplTest {
 			player2.setName("mike");
 			persistenceService.persist(player2);
 
-			System.out.println(persistenceService.get(player.getOrId(), PlayerEntity.class).getName());
+			System.out.println(persistenceService.get(player.getId(), PlayerEntity.class).getName());
 		});
 	}
 	

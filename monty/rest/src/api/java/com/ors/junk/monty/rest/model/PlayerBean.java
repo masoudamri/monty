@@ -2,21 +2,19 @@ package com.ors.junk.monty.rest.model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ors.junk.monty.domain.model.CardGame;
+import com.ors.junk.monty.domain.model.Hand;
 import com.ors.junk.monty.domain.model.Player;
 
 public class PlayerBean implements Player{
 	
 
-	UUID Id;
+	String bId;
 	
 	String name;
 	
-	Map<CardGameBean,HandBean> hands=new HashMap<>();
+
+	Map<String, Hand> hands;
 	
 	public PlayerBean() {
 		
@@ -24,16 +22,20 @@ public class PlayerBean implements Player{
 	
 	public PlayerBean(Player player){
 		this.name=player.getName();
-		this.Id=player.getId();
+		this.bId=player.getBId();
+		this.hands=new HashMap<>();
+		for(String game:player.getHands().keySet()) {
+			hands.put(game, new HandBean(player.getHands().get(game)));
+		}
 	}
 	
 	@Override
-	public UUID getId() {
-		return Id;
+	public String getBId() {
+		return bId;
 	}
 	
-	public void setId(UUID Id) {
-		this.Id=Id;
+	public void setId(String bId) {
+		this.bId=bId;
 	}
 
 
@@ -45,26 +47,14 @@ public class PlayerBean implements Player{
 	public void setName(String name) {
 		this.name=name;
 	}
-	
-	@Override
-	@JsonIgnore 
-	@SuppressWarnings("unchecked")
-	public <T extends CardGame> Set<T> getGames() {
-		return (Set<T>) hands.keySet();
-	}
-	
-	@Override
-	public HandBean getHand(CardGame game) {
-		return hands.get(game);
-	}
 
-	@JsonIgnore 
-	public Map<CardGameBean, HandBean> getHands() {
+
+	@Override
+	public Map<String,  Hand> getHands() {
 		return hands;
 	}
 
-	public void setHands(Map<CardGameBean, HandBean> hands) {
-		this.hands = hands;
+	public void setName(Map<String, Hand> hands) {
+		this.hands=hands;
 	}
-
 }

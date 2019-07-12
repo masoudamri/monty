@@ -1,14 +1,13 @@
 package com.ors.junk.monty.rest.model;
 
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.ors.junk.monty.domain.model.CardGame;
 
 public class CardGameBean  implements CardGame {
 
-	public UUID Id;
+	public String bId;
 
 	public String  name;
 	
@@ -19,18 +18,18 @@ public class CardGameBean  implements CardGame {
 
 
 	public CardGameBean(CardGame cardGame) {
-		this.Id=cardGame.getId();
+		this.bId=cardGame.getBId();
 		this.name=cardGame.getName();
 		this.players=cardGame.getPlayers().stream().map(p->new PlayerBean(p)).collect(Collectors.toSet());
 		this.gameDeck=new GameDeckBean(cardGame.getGameDeck());
 	}
 
-	public UUID getId() {
-		return Id;
+	public String getBId() {
+		return bId;
 	}
 
-	public void setId(UUID id) {
-		Id = id;
+	public void setBId(String bId) {
+		this.bId = bId;
 	}
 
 	public String getName() {

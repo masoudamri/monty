@@ -2,12 +2,12 @@ package com.ors.junk.monty.domain.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
 import com.ors.junk.monty.domain.model.Card;
 import com.ors.junk.monty.domain.model.CardGame;
+import com.ors.junk.monty.domain.model.Hand;
 import com.ors.junk.monty.domain.service.CardGameService;
 import com.ors.junk.monty.domain.service.PermuteService;
 import com.ors.junk.monty.persistence.model.CardEntity;
@@ -31,9 +31,17 @@ public class CardGameServiceImpl implements CardGameService {
 
 	@Override
 	public CardGame create(String name) {
-		CardGameEntity cardGame =new CardGameEntity(); 
-		cardGame.setName(name);
-		return persistenceService.persist(cardGame);
+		try {
+			get(name);
+		} catch (RuntimeException e) {
+
+			CardGameEntity cardGame = new CardGameEntity();
+			cardGame.setName(name);
+			GameDeckEntity gameDeck = persistenceService.persist(new GameDeckEntity());
+			cardGame.setGameDeck(gameDeck);
+			return persistenceService.persist(cardGame);
+		}
+		throw new RuntimeException("game with this name already exists");
 	}
 
 	@Override
@@ -45,11 +53,12 @@ public class CardGameServiceImpl implements CardGameService {
 			return;
 		}
 		List<Integer> permutation = permuteService.permute(size - 1);
-		List<Card> cards = new ArrayList<>(size);
+		List<CardEntity> cards = new ArrayList<>(size);
 		for (int i = 0; i < permutation.size(); i++) {
-			cards.set(i, deck.getCards().get(permutation.get(i)));
+			cards.add(deck.getCards().get(permutation.get(i)));
 		}
-		persistenceService.update(deck);
+		deck.setCards(cards);
+		persistenceService.persist(deck);
 	}
 
 	@Override
@@ -64,13 +73,15 @@ public class CardGameServiceImpl implements CardGameService {
 		if (player == null || cardGame == null) {
 			throw new RuntimeException("Player or game not found");
 		}
-		if (cardGame.getPlayers().contains(player)) {
+		if (cardGame.getPlayers().stream().anyMatch(p -> p.getBId().equals(player.getBId()))) {
 			throw new RuntimeException("Player already in game");
 		}
 		cardGame.getPlayers().add(player);
-		player.newHand(cardGame);
-		persistenceService.update(cardGame);
-		persistenceService.update(player);
+		HandEntity hand = new HandEntity();
+		hand.setPlayer(player);
+		player.getHands().put(cardGameName, (Hand) hand);
+		persistenceService.persist(hand);
+		persistenceService.persist(player);
 	}
 
 	@Override
@@ -83,26 +94,26 @@ public class CardGameServiceImpl implements CardGameService {
 		if (!cardGame.getPlayers().contains(player)) {
 			throw new RuntimeException("Player not in game");
 		}
-		HandEntity hand = player.getHand(cardGame);
+		HandEntity hand = (HandEntity) player.getHands().get(cardGameName);
 		GameDeckEntity gameDeck = cardGame.getGameDeck();
 		int size = gameDeck.getCards().size();
 		if (size == 0) {
 			throw new RuntimeException("No more cards!");
 		}
 		hand.getCards().add(gameDeck.getCards().remove(size - 1));
-		persistenceService.update(hand);
-		persistenceService.update(cardGame);
+		persistenceService.persist(hand);
+		persistenceService.persist(cardGame);
 	}
 
 	@Override
-	public UUID addNewDeck(String cardGameName) {
+	public String addNewDeck(String cardGameName) {
 		CardGameEntity cardGame = persistenceService.findByName(cardGameName, CardGameEntity.class);
 		GameDeckEntity gameDeck = cardGame.getGameDeck();
 		DeckEntity deckEntity = new DeckEntity();
 		persistenceService.persist(deckEntity);
 		for (Card.Suite suite : Card.Suite.values()) {
 			for (Card.Face face : Card.Face.values()) {
-				CardEntity cardEntity = new CardEntity(); 
+				CardEntity cardEntity = new CardEntity();
 				cardEntity.setDeck(deckEntity);
 				cardEntity.setSuite(suite);
 				cardEntity.setFace(face);
@@ -110,9 +121,16 @@ public class CardGameServiceImpl implements CardGameService {
 				gameDeck.getCards().add(cardEntity);
 			}
 		}
-		persistenceService.update(deckEntity);
-		persistenceService.update(gameDeck);
-		persistenceService.update(cardGame);
-		return deckEntity.getId();
+		persistenceService.persist(gameDeck);
+		persistenceService.persist(cardGame);
+		return deckEntity.getBId();
 	}
+
+	@Override
+	public void deleteDeck(String name) {
+		persistenceService.delete(persistenceService.findByName(name, CardGameEntity.class).getBId(),
+				CardGameEntity.class);
+
+	}
+
 }

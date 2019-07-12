@@ -1,11 +1,14 @@
 package com.ors.junk.monty.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.orientechnologies.orient.core.id.ORID;
 
 public interface Persistable {
 	
-	public ORID getOrId();
+	@JsonIgnore
+	public ORID getId();
 
-	public void setOrId(ORID orId);
+	@JsonIgnore
+	public void setId(ORID id);
 
 }

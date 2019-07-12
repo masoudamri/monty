@@ -3,27 +3,30 @@ package com.ors.junk.monty.persistence.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.GameDeck;
 
+@Entity
 public class GameDeckEntity implements GameDeck, Persistable{
 	
 	@Id
-	ORID orId;
+	ORID id;
 	
+	@OneToMany
 	List<CardEntity> cards=new ArrayList<>();
-	
 
 	@Override
-	public ORID getOrId() {	
-		return orId;
+	public ORID getId() {	
+		return id;
 	};
 
 
-	public void setOrId(ORID orId) {	
-		this.orId=orId;
+	public void setId(ORID id) {	
+		this.id=id;
 	};
 
 	

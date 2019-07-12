@@ -1,15 +1,19 @@
 package com.ors.junk.monty.persistence.model;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.Card;
 
+@Entity
 public class CardEntity  implements Card, Persistable{
 	
 	@Id
-	ORID orId;
+	ORID id;
 	
+	@ManyToOne
 	DeckEntity deck;
 	
 	Suite suite;
@@ -18,23 +22,25 @@ public class CardEntity  implements Card, Persistable{
 
 	
 	@Override
-	public ORID getOrId() {	
-		return orId;
+	public ORID getId() {	
+		return id;
 	}
 
 
-	public void setOrId(ORID orId) {	
-		this.orId=orId;
+	public void setId(ORID id) {	
+		this.id=id;
 	}
 
 	
-	
+	@Override
 	public DeckEntity getDeck() {
 		return deck;
 	}
+	
 	public void setDeck(DeckEntity deck) {
 		this.deck = deck;
 	}
+	
 	public Suite getSuite() {
 		return suite;
 	}

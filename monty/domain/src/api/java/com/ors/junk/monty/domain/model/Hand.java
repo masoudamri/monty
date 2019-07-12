@@ -6,8 +6,6 @@ public interface Hand {
 
 	public Player getPlayer();
 
-	public CardGame getCardGame();
-
 	public <T extends Card> Set<T> getCards();
 
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+    xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="montyJpaUnit">
+        <provider>com.orientechnologies.orient.object.jpa.OJPAPersistenceProvider</provider>
+
+
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="plocal:/tmp/monty" />
+            <property name="javax.persistence.jdbc.user" value="admin" />
+            <property name="javax.persistence.jdbc.password" value="admin" />
+            <property name="com.orientdb.entityClasses" value="com.ors.junk.monty.persistence.model" />
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,5 +1,6 @@
 dependencies {
     apiImplementation project(path: ":monty:domain",configuration: "api")
+	apiImplementation group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.9.8"
 
 	apiImplementation group: 'com.orientechnologies', name: 'orientdb-object', version: '3.0.21'
 	apiImplementation group: 'com.orientechnologies', name: 'orientdb-client', version: '3.0.21'

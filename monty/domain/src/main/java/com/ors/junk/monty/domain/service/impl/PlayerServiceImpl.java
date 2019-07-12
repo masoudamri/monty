@@ -18,13 +18,25 @@ public class PlayerServiceImpl implements PlayerService {
 	
 	@Override
 	public Player create(String name) {
-		PlayerEntity player= new PlayerEntity();
-		player.setName(name);
-		return persistenceService.persist(player);
+		try {
+			get(name);
+		} catch (RuntimeException e) {
+			PlayerEntity player= new PlayerEntity();
+			player.setName(name);
+			return persistenceService.persist(player);		
+		}
+		throw new RuntimeException("player with this name exists");
 	}
 
 	@Override
 	public Player get(String name) {
 		return persistenceService.findByName(name, PlayerEntity.class);
+	}
+	
+	@Override
+	public void deletePlayer(String name) {
+		persistenceService.delete(persistenceService.findByName(name, PlayerEntity.class).getBId(),
+				PlayerEntity.class);
+
 	}
 }

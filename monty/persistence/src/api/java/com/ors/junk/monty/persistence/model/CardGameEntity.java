@@ -4,42 +4,51 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.ors.junk.monty.domain.model.CardGame;
 
+@Entity
 public class CardGameEntity  implements CardGame, Persistable{
 
 	@Id
-	ORID orId;
+	ORID id;
 
-	public UUID Id=UUID.randomUUID();
+	@Column(unique=true)
+	public String bId=UUID.randomUUID().toString();
 
+	@Column(unique=true)
 	public String  name;
 	
+	@OneToMany
 	public Set<PlayerEntity> players=new HashSet<>();
 	
-	public GameDeckEntity gameDeck=new GameDeckEntity();
-
+	@OneToOne
+	public GameDeckEntity gameDeck;
 	
 	
 	@Override
-	public ORID getOrId() {	
-		return orId;
+	public ORID getId() {	
+		return id;
 	};
 
 
-	public void setOrId(ORID orId) {	
-		this.orId=orId;
+	public void setId(ORID id) {	
+		this.id=id;
 	};
 
-	public UUID getId() {
-		return Id;
+	@Override
+	public String getBId() {
+		return bId;
 	}
 
-	public void setId(UUID id) {
-		Id = id;
+	public void setBId(String bId) {
+		this.bId = bId;
 	}
 
 	public String getName() {

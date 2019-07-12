@@ -2,45 +2,50 @@ package com.ors.junk.monty.persistence.model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import com.orientechnologies.orient.core.id.ORID;
-import com.ors.junk.monty.domain.model.CardGame;
+import com.ors.junk.monty.domain.model.Hand;
 import com.ors.junk.monty.domain.model.Player;
 
+@Entity
 public class PlayerEntity implements Player, Persistable{
-	
 
 	@Id
-	ORID orId;
+	ORID id;
 	
-	UUID Id=UUID.randomUUID();
+	@Column(unique=true)
+	String bId=UUID.randomUUID().toString();
 	
+	@Column(unique=true)
 	String name;
 	
-	Map<CardGameEntity,HandEntity> hands=new HashMap<>();
-
+	@OneToOne
+	Map<String, Hand> hands=new HashMap<>();
+	
 	@Override
-	public ORID getOrId() {	
-		return orId;
+	public ORID getId() {	
+		return id;
 	};
 
 
-	public void setOrId(ORID orId) {	
-		this.orId=orId;
+	public void setId(ORID id) {	
+		this.id=id;
 	};
 
 	
 	@Override
-	public UUID getId() {
-		return Id;
+	public String getBId() {
+		return bId;
 	}
 	
-	public void setId(UUID Id) {
-		this.Id=Id;
+	public void setBId(String bId) {
+		this.bId=bId;
 	}
 
 
@@ -53,31 +58,13 @@ public class PlayerEntity implements Player, Persistable{
 		this.name=name;
 	}
 	
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends CardGame> Set<T> getGames() {
-		return (Set<T>) hands.keySet();
-	}
-
-	public HandEntity newHand(CardGameEntity game) {
-		if(hands.get(game)!=null) {
-			throw new RuntimeException("Player already in this game!");
-		}
-		hands.put(game, new HandEntity());
-		return hands.get(game);
-	}
 
 	
-	@Override
-	public HandEntity getHand(CardGame game) {
-		return hands.get(game);
-	}
-
-	public Map<CardGameEntity, HandEntity> getHands() {
+	public Map<String, Hand> getHands() {
 		return hands;
 	}
 
-	public void setHands(Map<CardGameEntity, HandEntity> hands) {
+	public void setHands(Map<String, Hand> hands) {
 		this.hands = hands;
 	}
 
