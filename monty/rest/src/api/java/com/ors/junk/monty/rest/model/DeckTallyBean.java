@@ -8,7 +8,7 @@ import com.ors.junk.monty.domain.model.Card;
 
 public class DeckTallyBean {
 	
-	static class TallyComparator implements Comparator<Card>{
+	public static class TallyComparator implements Comparator<Card>{
 
 		@Override
 		public int compare(Card arg0, Card arg1) {

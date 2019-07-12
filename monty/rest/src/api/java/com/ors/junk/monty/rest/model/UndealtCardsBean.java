@@ -1,6 +1,5 @@
 package com.ors.junk.monty.rest.model;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 

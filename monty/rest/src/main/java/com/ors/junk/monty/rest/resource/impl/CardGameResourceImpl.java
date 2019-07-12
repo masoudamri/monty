@@ -1,8 +1,10 @@
 package com.ors.junk.monty.rest.resource.impl;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -86,23 +88,36 @@ public class CardGameResourceImpl implements CardGameResource {
 	public DeckTallyBean deckTally(String name) {
 		List<Card> deck = cardGameService.get(name).getGameDeck().getCards();
 		DeckTallyBean tally = new DeckTallyBean();
+		List<Card> sortedDeck=new ArrayList<>(deck);
+		sortedDeck.sort(new DeckTallyBean.TallyComparator());
 		for (int i = 0; i < deck.size(); i++) {
 			CardBean card = new CardBean();
-			card.setFace(deck.get(i).getFace());
-			card.setSuite(deck.get(i).getSuite());
+			card.setFace(sortedDeck.get(i).getFace());
+			card.setSuite(sortedDeck.get(i).getSuite());
 			if (tally.getTallyMap().containsKey(card)) {
 				continue;
 			}
 			int n = 1;
 			for (int j = i+1; j < deck.size(); j++) {
-				if (deck.get(j).getFace() == card.getFace() && deck.get(j).getSuite() == card.getSuite())
+				if (sortedDeck.get(j).getFace().equals(card.getFace()) 
+						&& sortedDeck.get(j).getSuite().equals(card.getSuite())) {
 					n++;
+				}else {
+					break;
+				}
 			}
 			tally.getTallyMap().put(card, n);
 		}
 		return tally;
 	}
 
+//	static boolean first(List<Card> deck, int j, Card card) {
+//		boolean b=deck.get(j).getFace().equals(card.getFace());
+//		return b;
+//	}
+//	static boolean second(List<Card> deck, int j, Card card) {
+//		deck.get(j).getFace().equals(card.getFace())
+//	}
 	@Override
 	public PlayerScoresBean playerScores(String gameName) {
 		PlayerScoresBean scores = new PlayerScoresBean();
